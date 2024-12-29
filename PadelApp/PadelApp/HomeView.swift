@@ -13,20 +13,16 @@ struct HomeView: View {
                     .fontWeight(.bold)
                     .padding()
                 
-                Button(action: {
-                    // Action for finding games
-                }) {
-                    NavigationLink(destination: Text("Games View")) {
-                        HStack {
-                            Image(systemName: "sportscourt")
-                            Text("Find Games")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                NavigationLink(destination: FacilitiesView()) {
+                    HStack {
+                        Image(systemName: "sportscourt")
+                        Text("Find Courts")
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
                 .padding(.horizontal)
                 
@@ -46,9 +42,7 @@ struct HomeView: View {
                 Button(action: {
                     do {
                         try Auth.auth().signOut()
-                        DispatchQueue.main.async {
-                            self.userIsLoggedIn = false
-                        }
+                        userIsLoggedIn = false
                     } catch {
                         print("Error signing out: \(error)")
                     }
