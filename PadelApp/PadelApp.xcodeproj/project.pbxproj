@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C67AA01C2D21B75A001AA932 /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01B2D21B75A001AA932 /* UserProfileView.swift */; };
+		C67AA01E2D21B762001AA932 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01D2D21B762001AA932 /* User.swift */; };
+		C67AA0202D21BA79001AA932 /* UserSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01F2D21BA79001AA932 /* UserSetupView.swift */; };
 		C6CF9EE52D1C08D70084E56B /* PadelAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */; };
 		C6CF9EE72D1C08D70084E56B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CF9EE62D1C08D70084E56B /* ContentView.swift */; };
 		C6CF9EE92D1C08D80084E56B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6CF9EE82D1C08D80084E56B /* Assets.xcassets */; };
@@ -40,6 +43,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C67AA01B2D21B75A001AA932 /* UserProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserProfileView.swift; path = Views/UserProfileView.swift; sourceTree = "<group>"; };
+		C67AA01D2D21B762001AA932 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = Models/User.swift; sourceTree = "<group>"; };
+		C67AA01F2D21BA79001AA932 /* UserSetupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserSetupView.swift; path = Views/UserSetupView.swift; sourceTree = "<group>"; };
 		C6CF9EE12D1C08D70084E56B /* PadelApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PadelApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelAppApp.swift; sourceTree = "<group>"; };
 		C6CF9EE62D1C08D70084E56B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -106,7 +112,10 @@
 				C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */,
 				C6CF9F232D1C0CEE0084E56B /* AuthView.swift */,
 				C6CF9EE62D1C08D70084E56B /* ContentView.swift */,
+				C67AA01F2D21BA79001AA932 /* UserSetupView.swift */,
+				C67AA01B2D21B75A001AA932 /* UserProfileView.swift */,
 				C6CF9F292D1C14370084E56B /* HomeView.swift */,
+				C67AA01D2D21B762001AA932 /* User.swift */,
 				C6CF9F272D1C0FEA0084E56B /* GoogleService-Info.plist */,
 				C6CF9EE82D1C08D80084E56B /* Assets.xcassets */,
 				C6CF9EEA2D1C08D80084E56B /* Preview Content */,
@@ -221,7 +230,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C67AA01C2D21B75A001AA932 /* UserProfileView.swift in Sources */,
 				C6CF9EE72D1C08D70084E56B /* ContentView.swift in Sources */,
+				C67AA01E2D21B762001AA932 /* User.swift in Sources */,
+				C67AA0202D21BA79001AA932 /* UserSetupView.swift in Sources */,
 				C6CF9F2A2D1C14370084E56B /* HomeView.swift in Sources */,
 				C6CF9EE52D1C08D70084E56B /* PadelAppApp.swift in Sources */,
 				C6CF9F242D1C0CEE0084E56B /* AuthView.swift in Sources */,

@@ -4,81 +4,86 @@ import FirebaseAuth
 struct AuthView: View {
     @State private var email = ""
     @State private var password = ""
-    @State private var isLoginMode = true
+    @State private var isLogin = true
     @State private var errorMessage = ""
-    @State private var isAuthenticated = false
+    @Binding var userIsLoggedIn: Bool
+    @State private var showUserSetup = false
     
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // Title
-                Text(isLoginMode ? "Welcome Back" : "Create Account")
+                Text("Padel App")
                     .font(.largeTitle)
-                    .bold()
+                    .fontWeight(.bold)
+                    .padding(.top, 50)
                 
-                // Email field
+                Text(isLogin ? "Login" : "Create Account")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.top, 10)
+                
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
+                    .padding(.horizontal)
                 
-                // Password field
                 SecureField("Password", text: $password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
                 
-                // Error message
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.red)
-                        .font(.caption)
+                        .padding(.horizontal)
                 }
                 
-                // Login/Signup button
                 Button(action: handleAuth) {
-                    Text(isLoginMode ? "Log In" : "Sign Up")
+                    Text(isLogin ? "Log In" : "Sign Up")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
+                .padding(.horizontal)
                 
-                // Toggle between login and signup
-                Button(action: { isLoginMode.toggle() }) {
-                    Text(isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Log In")
+                Button(action: { isLogin.toggle() }) {
+                    Text(isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In")
                         .foregroundColor(.blue)
                 }
+                
+                Spacer()
             }
-            .padding()
-            .navigationBarHidden(true)
+        }
+        .fullScreenCover(isPresented: $showUserSetup) {
+            UserSetupView(userIsLoggedIn: $userIsLoggedIn)
         }
     }
     
     private func handleAuth() {
-        errorMessage = ""
-        
-        if isLoginMode {
+        if isLogin {
             // Login
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
                 if let error = error {
                     errorMessage = error.localizedDescription
                     return
                 }
-                isAuthenticated = true
+                userIsLoggedIn = true
             }
         } else {
             // Sign up
             Auth.auth().createUser(withEmail: email, password: password) { result, error in
                 if let error = error {
-                    print("Firebase Auth Error: \(error)")
-                    if let underlyingError = (error as NSError).userInfo["NSUnderlyingError"] as? NSError {
-                        print("Underlying error: \(underlyingError)")
-                    }
                     errorMessage = error.localizedDescription
                     return
                 }
-                isAuthenticated = true
+                // Instead of setting userIsLoggedIn to true, show the setup view
+                showUserSetup = true
             }
         }
     }
+}
+
+#Preview {
+    AuthView(userIsLoggedIn: .constant(false))
 } 

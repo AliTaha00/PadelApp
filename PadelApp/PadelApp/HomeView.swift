@@ -2,6 +2,7 @@ import SwiftUI
 import FirebaseAuth
 
 struct HomeView: View {
+    @Binding var userIsLoggedIn: Bool
     @State private var userEmail: String = Auth.auth().currentUser?.email ?? "User"
     
     var body: some View {
@@ -9,9 +10,9 @@ struct HomeView: View {
             VStack(spacing: 20) {
                 Text("Welcome, \(userEmail)!")
                     .font(.title)
+                    .fontWeight(.bold)
                     .padding()
                 
-                // Add your main navigation buttons here
                 Button(action: {
                     // Action for finding games
                 }) {
@@ -29,25 +30,28 @@ struct HomeView: View {
                 }
                 .padding(.horizontal)
                 
-                Button(action: {
-                    // Action for profile
-                }) {
-                    NavigationLink(destination: Text("Profile View")) {
-                        HStack {
-                            Image(systemName: "person")
-                            Text("Profile")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                NavigationLink(destination: UserProfileView()) {
+                    HStack {
+                        Image(systemName: "person")
+                        Text("Profile")
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
                 .padding(.horizontal)
                 
                 Button(action: {
-                    try? Auth.auth().signOut()
+                    do {
+                        try Auth.auth().signOut()
+                        DispatchQueue.main.async {
+                            self.userIsLoggedIn = false
+                        }
+                    } catch {
+                        print("Error signing out: \(error)")
+                    }
                 }) {
                     HStack {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
@@ -63,11 +67,11 @@ struct HomeView: View {
                 
                 Spacer()
             }
-            .navigationBarTitle("PadelApp", displayMode: .large)
+            .navigationBarTitle("Padel App", displayMode: .large)
         }
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(userIsLoggedIn: .constant(true))
 } 
