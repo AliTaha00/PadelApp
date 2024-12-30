@@ -26,10 +26,10 @@ struct HomeView: View {
                 }
                 .padding(.horizontal)
                 
-                NavigationLink(destination: UserProfileView()) {
+                NavigationLink(destination: MyBookingsView()) {
                     HStack {
-                        Image(systemName: "person")
-                        Text("Profile")
+                        Image(systemName: "calendar")
+                        Text("My Bookings")
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -39,14 +39,20 @@ struct HomeView: View {
                 }
                 .padding(.horizontal)
                 
-                Button(action: {
-                    do {
-                        try Auth.auth().signOut()
-                        userIsLoggedIn = false
-                    } catch {
-                        print("Error signing out: \(error)")
+                NavigationLink(destination: UserProfileView()) {
+                    HStack {
+                        Image(systemName: "person")
+                        Text("Profile")
                     }
-                }) {
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.orange)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .padding(.horizontal)
+                
+                Button(action: signOut) {
                     HStack {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                         Text("Sign Out")
@@ -62,6 +68,15 @@ struct HomeView: View {
                 Spacer()
             }
             .navigationBarTitle("Padel App", displayMode: .large)
+        }
+    }
+    
+    private func signOut() {
+        do {
+            try Auth.auth().signOut()
+            userIsLoggedIn = false
+        } catch {
+            print("Error signing out: \(error)")
         }
     }
 }

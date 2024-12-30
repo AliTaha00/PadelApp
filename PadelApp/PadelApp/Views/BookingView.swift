@@ -9,10 +9,26 @@ struct BookingView: View {
     @Binding var isPresented: Bool
     
     @State private var selectedHour: Int?
-    @State private var duration = 1
+    @State private var duration = 60
     @State private var isLoading = false
     @State private var errorMessage = ""
     @State private var showError = false
+    @State private var bookedTimeSlots: [(start: Int, end: Int)] = []
+    
+    var availableTimeSlots: [Int] {
+        let allTimeSlots = Array(facility.openingHour..<facility.closingHour)
+        return allTimeSlots.filter { hour in
+            let potentialEndTime = hour + (duration / 60)
+            
+            let hasConflict = bookedTimeSlots.contains { bookedSlot in
+                (hour < bookedSlot.end && potentialEndTime > bookedSlot.start)
+            }
+            
+            let fitsWithinHours = potentialEndTime <= facility.closingHour
+            
+            return !hasConflict && fitsWithinHours
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -20,21 +36,6 @@ struct BookingView: View {
                 Section(header: Text("Booking Details")) {
                     Text("Court: \(court.name)")
                     Text("Date: \(date.formatted(date: .long, time: .omitted))")
-                }
-                
-                Section(header: Text("Select Time")) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(facility.openingHour..<facility.closingHour, id: \.self) { hour in
-                                TimeSlotButton(
-                                    hour: hour,
-                                    isSelected: selectedHour == hour,
-                                    action: { selectedHour = hour }
-                                )
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
                 }
                 
                 Section(header: Text("Duration")) {
@@ -45,9 +46,37 @@ struct BookingView: View {
                     }
                 }
                 
-                Section(header: Text("Price")) {
-                    Text("$\(calculatePrice(), specifier: "%.2f")")
-                        .font(.headline)
+                Section(header: Text("Available Time Slots")) {
+                    if isLoading {
+                        ProgressView()
+                    } else if availableTimeSlots.isEmpty {
+                        Text("No available time slots for selected duration")
+                            .foregroundColor(.secondary)
+                    } else {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(availableTimeSlots, id: \.self) { hour in
+                                    TimeSlotButton(
+                                        hour: hour,
+                                        isSelected: selectedHour == hour,
+                                        action: { selectedHour = hour }
+                                    )
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                }
+                
+                if let selectedHour = selectedHour {
+                    Section(header: Text("Selected Time")) {
+                        HStack {
+                            Text("\(String(format: "%02d:00", selectedHour)) - \(String(format: "%02d:%02d", selectedHour + (duration / 60), (duration % 60)))")
+                            Spacer()
+                            Text("$\(calculatePrice(), specifier: "%.2f")")
+                                .fontWeight(.semibold)
+                        }
+                    }
                 }
                 
                 Section {
@@ -70,7 +99,46 @@ struct BookingView: View {
             } message: {
                 Text(errorMessage)
             }
+            .onChange(of: duration) { _ in
+                selectedHour = nil
+            }
+            .onAppear {
+                loadExistingBookings()
+            }
         }
+    }
+    
+    private func loadExistingBookings() {
+        isLoading = true
+        let db = Firestore.firestore()
+        
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        db.collection("bookings")
+            .whereField("courtId", isEqualTo: court.id)
+            .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: startOfDay))
+            .whereField("date", isLessThan: Timestamp(date: endOfDay))
+            .whereField("status", isEqualTo: Booking.BookingStatus.confirmed.rawValue)
+            .getDocuments { snapshot, error in
+                isLoading = false
+                
+                if let error = error {
+                    errorMessage = error.localizedDescription
+                    showError = true
+                    return
+                }
+                
+                bookedTimeSlots = snapshot?.documents.compactMap { document -> (start: Int, end: Int)? in
+                    guard let startTime = document.data()["startTime"] as? Int,
+                          let duration = document.data()["duration"] as? Int else {
+                        return nil
+                    }
+                    let endTime = startTime + (duration / 60)
+                    return (start: startTime, end: endTime)
+                } ?? []
+            }
     }
     
     private func createBooking() {
@@ -79,27 +147,36 @@ struct BookingView: View {
         
         isLoading = true
         
-        let booking = Booking(
-            id: UUID().uuidString,
-            facilityId: facility.id,
-            courtId: court.id,
-            userId: userId,
-            date: date,
-            startTime: startTime,
-            duration: duration,
-            status: .confirmed,
-            totalPrice: calculatePrice()
-        )
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        
+        let bookingData: [String: Any] = [
+            "id": UUID().uuidString,
+            "facilityId": facility.id,
+            "courtId": court.id,
+            "userId": userId,
+            "date": Timestamp(date: startOfDay),
+            "startTime": startTime,
+            "duration": duration,
+            "status": Booking.BookingStatus.confirmed.rawValue,
+            "totalPrice": calculatePrice()
+        ]
         
         let db = Firestore.firestore()
-        do {
-            try db.collection("bookings").document(booking.id).setData(from: booking)
-            isPresented = false
-        } catch {
-            errorMessage = error.localizedDescription
-            showError = true
+        db.collection("bookings").document(bookingData["id"] as! String).setData(bookingData) { error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+                showError = true
+            } else {
+                isPresented = false
+            }
+            isLoading = false
         }
-        isLoading = false
+    }
+    
+    private func calculatePrice() -> Double {
+        let hourlyRate = court.pricePerHour
+        return (Double(duration) / 60.0) * hourlyRate
     }
     
     private func formatDuration(minutes: Int) -> String {
@@ -111,11 +188,6 @@ struct BookingView: View {
         } else {
             return "\(hours)h \(remainingMinutes)min"
         }
-    }
-    
-    private func calculatePrice() -> Double {
-        let hourlyRate = court.pricePerHour
-        return (Double(duration) / 60.0) * hourlyRate
     }
 }
 
