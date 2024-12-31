@@ -16,7 +16,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if userIsLoggedIn {
-                HomeView(userIsLoggedIn: $userIsLoggedIn)
+                MainTabView(userIsLoggedIn: $userIsLoggedIn)
             } else {
                 AuthView(userIsLoggedIn: $userIsLoggedIn)
             }
@@ -27,14 +27,11 @@ struct ContentView: View {
             Auth.auth().addStateDidChangeListener { auth, user in
                 DispatchQueue.main.async {
                     if let user = user {
-                        // Check if user has completed setup
                         let db = Firestore.firestore()
                         db.collection("users").document(user.uid).getDocument { document, error in
                             if let document = document, document.exists {
-                                // User has completed setup
                                 userIsLoggedIn = true
                             } else {
-                                // User needs to complete setup
                                 showUserSetup = true
                             }
                         }

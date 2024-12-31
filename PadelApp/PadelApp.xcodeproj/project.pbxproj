@@ -19,6 +19,7 @@
 		C67AA0262D21C11D001AA932 /* FacilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA0252D21C11D001AA932 /* FacilitiesView.swift */; };
 		C67AA0282D21C191001AA932 /* FacilityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA0272D21C191001AA932 /* FacilityDetailView.swift */; };
 		C67AA02A2D21C2FD001AA932 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA0292D21C2FD001AA932 /* SampleData.swift */; };
+		C6B41E1A2D241E9400E9DC50 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B41E192D241E9300E9DC50 /* MainTabView.swift */; };
 		C6CF9EE52D1C08D70084E56B /* PadelAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */; };
 		C6CF9EE72D1C08D70084E56B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CF9EE62D1C08D70084E56B /* ContentView.swift */; };
 		C6CF9EE92D1C08D80084E56B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6CF9EE82D1C08D80084E56B /* Assets.xcassets */; };
@@ -64,6 +65,7 @@
 		C67AA0252D21C11D001AA932 /* FacilitiesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FacilitiesView.swift; path = Views/FacilitiesView.swift; sourceTree = "<group>"; };
 		C67AA0272D21C191001AA932 /* FacilityDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FacilityDetailView.swift; path = Views/FacilityDetailView.swift; sourceTree = "<group>"; };
 		C67AA0292D21C2FD001AA932 /* SampleData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SampleData.swift; path = Utils/SampleData.swift; sourceTree = "<group>"; };
+		C6B41E192D241E9300E9DC50 /* MainTabView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTabView.swift; path = Views/MainTabView.swift; sourceTree = "<group>"; };
 		C6CF9EE12D1C08D70084E56B /* PadelApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PadelApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelAppApp.swift; sourceTree = "<group>"; };
 		C6CF9EE62D1C08D70084E56B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 				C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */,
 				C6CF9F232D1C0CEE0084E56B /* AuthView.swift */,
 				C6CF9EE62D1C08D70084E56B /* ContentView.swift */,
+				C6B41E192D241E9300E9DC50 /* MainTabView.swift */,
 				C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */,
 				C6000A292D22C3BC002A7CE3 /* MyBookingsView.swift */,
 				C6000A272D22C04D002A7CE3 /* Booking.swift */,
@@ -266,6 +269,7 @@
 				C67AA0232D21C115001AA932 /* Court.swift in Sources */,
 				C67AA0202D21BA79001AA932 /* UserSetupView.swift in Sources */,
 				C67AA02A2D21C2FD001AA932 /* SampleData.swift in Sources */,
+				C6B41E1A2D241E9400E9DC50 /* MainTabView.swift in Sources */,
 				C6000A2C2D22CB7A002A7CE3 /* BookingDetailView.swift in Sources */,
 				C6000A282D22C04D002A7CE3 /* Booking.swift in Sources */,
 				C6CF9F2A2D1C14370084E56B /* HomeView.swift in Sources */,
