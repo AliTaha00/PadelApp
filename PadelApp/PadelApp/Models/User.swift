@@ -2,7 +2,7 @@ import Foundation
 import FirebaseFirestore
 
 struct User: Codable {
-    let id: String
+    var id: String?
     var email: String
     var firstName: String
     var lastName: String

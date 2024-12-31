@@ -15,11 +15,26 @@ struct HomeView: View {
             NavigationLink(destination: FacilitiesView()) {
                 HStack {
                     Image(systemName: "sportscourt")
-                    Text("Find Courts")
+                    Text("Reserve a Court")
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .padding(.horizontal)
+            
+            Button(action: {
+                // TODO: Implement open match creation
+            }) {
+                HStack {
+                    Image(systemName: "person.3.fill")
+                    Text("Create Open Match")
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.green)
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }

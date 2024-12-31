@@ -16,24 +16,28 @@ struct UserProfileView: View {
     var body: some View {
         Form {
             Section(header: Text("Profile Information")) {
-                TextField("First Name", text: $firstName)
+                if isLoading && user == nil {
+                    ProgressView()
+                } else {
+                    TextField("First Name", text: $firstName)
+                        .disabled(!isEditing)
+                    TextField("Last Name", text: $lastName)
+                        .disabled(!isEditing)
+                    TextField("Phone Number", text: $phoneNumber)
+                        .keyboardType(.phonePad)
+                        .disabled(!isEditing)
+                    
+                    Picker("Gender", selection: $gender) {
+                        Text("Male").tag(User.Gender.male)
+                        Text("Female").tag(User.Gender.female)
+                        Text("Other").tag(User.Gender.other)
+                    }
                     .disabled(!isEditing)
-                TextField("Last Name", text: $lastName)
-                    .disabled(!isEditing)
-                TextField("Phone Number", text: $phoneNumber)
-                    .keyboardType(.phonePad)
-                    .disabled(!isEditing)
-                
-                Picker("Gender", selection: $gender) {
-                    Text("Male").tag(User.Gender.male)
-                    Text("Female").tag(User.Gender.female)
-                    Text("Other").tag(User.Gender.other)
+                    
+                    TextField("Age", text: $age)
+                        .keyboardType(.numberPad)
+                        .disabled(!isEditing)
                 }
-                .disabled(!isEditing)
-                
-                TextField("Age", text: $age)
-                    .keyboardType(.numberPad)
-                    .disabled(!isEditing)
             }
             
             if isEditing {
@@ -74,7 +78,9 @@ struct UserProfileView: View {
             }
         }
         .onAppear {
-            loadUserProfile()
+            if user == nil {
+                loadUserProfile()
+            }
         }
     }
     
@@ -89,16 +95,47 @@ struct UserProfileView: View {
     private func loadUserProfile() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
+        isLoading = true
+        print("Loading user profile for ID: \(userId)")
+        
         let db = Firestore.firestore()
         db.collection("users").document(userId).getDocument { document, error in
-            if let user = try? document?.data(as: User.self) {
-                self.firstName = user.firstName
-                self.lastName = user.lastName
-                self.phoneNumber = user.phoneNumber
-                self.gender = user.gender
-                self.age = String(user.age)
-                self.user = user
+            if let error = error {
+                print("Error loading user profile: \(error)")
+                isLoading = false
+                return
             }
+            
+            if let document = document, document.exists, let data = document.data() {
+                DispatchQueue.main.async {
+                    self.firstName = data["firstName"] as? String ?? ""
+                    self.lastName = data["lastName"] as? String ?? ""
+                    self.phoneNumber = data["phoneNumber"] as? String ?? ""
+                    if let genderString = data["gender"] as? String {
+                        self.gender = User.Gender(rawValue: genderString) ?? .male
+                    }
+                    self.age = String(data["age"] as? Int ?? 0)
+                    
+                    // Create user object
+                    self.user = User(
+                        id: userId,
+                        email: data["email"] as? String ?? "",
+                        firstName: self.firstName,
+                        lastName: self.lastName,
+                        phoneNumber: self.phoneNumber,
+                        gender: self.gender,
+                        age: Int(self.age) ?? 0,
+                        userType: User.UserType(rawValue: data["userType"] as? String ?? "player") ?? .player,
+                        dateJoined: (data["dateJoined"] as? Timestamp)?.dateValue() ?? Date()
+                    )
+                    
+                    print("Successfully loaded user profile")
+                }
+            } else {
+                print("No user document found")
+            }
+            
+            isLoading = false
         }
     }
     
@@ -119,6 +156,7 @@ struct UserProfileView: View {
             isLoading = false
             if error == nil {
                 isEditing = false // Exit edit mode after successful save
+                loadUserProfile() // Reload the profile after saving
             }
         }
     }
