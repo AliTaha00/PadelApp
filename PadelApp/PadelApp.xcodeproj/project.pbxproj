@@ -20,6 +20,7 @@
 		C67AA0282D21C191001AA932 /* FacilityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA0272D21C191001AA932 /* FacilityDetailView.swift */; };
 		C67AA02A2D21C2FD001AA932 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA0292D21C2FD001AA932 /* SampleData.swift */; };
 		C6B41E1A2D241E9400E9DC50 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B41E192D241E9300E9DC50 /* MainTabView.swift */; };
+		C6B41E1C2D24262E00E9DC50 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B41E1B2D24262E00E9DC50 /* EditProfileView.swift */; };
 		C6CF9EE52D1C08D70084E56B /* PadelAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */; };
 		C6CF9EE72D1C08D70084E56B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CF9EE62D1C08D70084E56B /* ContentView.swift */; };
 		C6CF9EE92D1C08D80084E56B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6CF9EE82D1C08D80084E56B /* Assets.xcassets */; };
@@ -66,6 +67,7 @@
 		C67AA0272D21C191001AA932 /* FacilityDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FacilityDetailView.swift; path = Views/FacilityDetailView.swift; sourceTree = "<group>"; };
 		C67AA0292D21C2FD001AA932 /* SampleData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SampleData.swift; path = Utils/SampleData.swift; sourceTree = "<group>"; };
 		C6B41E192D241E9300E9DC50 /* MainTabView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTabView.swift; path = Views/MainTabView.swift; sourceTree = "<group>"; };
+		C6B41E1B2D24262E00E9DC50 /* EditProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EditProfileView.swift; path = Views/EditProfileView.swift; sourceTree = "<group>"; };
 		C6CF9EE12D1C08D70084E56B /* PadelApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PadelApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelAppApp.swift; sourceTree = "<group>"; };
 		C6CF9EE62D1C08D70084E56B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */,
 				C6CF9F232D1C0CEE0084E56B /* AuthView.swift */,
 				C6CF9EE62D1C08D70084E56B /* ContentView.swift */,
+				C6B41E1B2D24262E00E9DC50 /* EditProfileView.swift */,
 				C6B41E192D241E9300E9DC50 /* MainTabView.swift */,
 				C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */,
 				C6000A292D22C3BC002A7CE3 /* MyBookingsView.swift */,
@@ -260,6 +263,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6B41E1C2D24262E00E9DC50 /* EditProfileView.swift in Sources */,
 				C67AA01C2D21B75A001AA932 /* UserProfileView.swift in Sources */,
 				C6CF9EE72D1C08D70084E56B /* ContentView.swift in Sources */,
 				C67AA01E2D21B762001AA932 /* User.swift in Sources */,

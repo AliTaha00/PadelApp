@@ -4,82 +4,73 @@ import FirebaseFirestore
 
 struct UserProfileView: View {
     @State private var user: User?
-    @State private var firstName = ""
-    @State private var lastName = ""
-    @State private var phoneNumber = ""
-    @State private var gender = User.Gender.male
-    @State private var age = ""
     @State private var isLoading = false
-    @State private var isEditing = false
-    @Environment(\.presentationMode) var presentationMode
+    @State private var showingEditProfile = false
     
     var body: some View {
-        Form {
-            Section(header: Text("Profile Information")) {
-                if isLoading && user == nil {
-                    ProgressView()
-                } else {
-                    TextField("First Name", text: $firstName)
-                        .disabled(!isEditing)
-                    TextField("Last Name", text: $lastName)
-                        .disabled(!isEditing)
-                    TextField("Phone Number", text: $phoneNumber)
-                        .keyboardType(.phonePad)
-                        .disabled(!isEditing)
-                    
-                    Picker("Gender", selection: $gender) {
-                        Text("Male").tag(User.Gender.male)
-                        Text("Female").tag(User.Gender.female)
-                        Text("Other").tag(User.Gender.other)
-                    }
-                    .disabled(!isEditing)
-                    
-                    TextField("Age", text: $age)
-                        .keyboardType(.numberPad)
-                        .disabled(!isEditing)
-                }
-            }
-            
-            if isEditing {
-                Section {
-                    Button(action: saveProfile) {
-                        if isLoading {
-                            ProgressView()
-                        } else {
-                            Text("Save Changes")
+        VStack(spacing: 20) {
+            if isLoading && user == nil {
+                ProgressView()
+            } else if let user = user {
+                // Profile Summary
+                VStack(alignment: .leading, spacing: 15) {
+                    HStack {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                            .foregroundColor(.blue)
+                        
+                        VStack(alignment: .leading) {
+                            Text("\(user.firstName) \(user.lastName)")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            Text(user.email)
+                                .foregroundColor(.secondary)
                         }
                     }
+                    .padding()
+                    
+                    Button(action: { showingEditProfile = true }) {
+                        HStack {
+                            Image(systemName: "pencil")
+                            Text("Edit Profile")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
+                    
+                    Button(action: signOut) {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                            Text("Sign Out")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
                 }
             }
             
-            Section {
-                Button(action: signOut) {
-                    HStack {
-                        Spacer()
-                        Text("Sign Out")
-                            .foregroundColor(.red)
-                        Spacer()
-                    }
-                }
-            }
+            Spacer()
         }
         .navigationTitle("Profile")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    if isEditing {
-                        // Cancel changes by reloading the current values
-                        loadUserProfile()
-                    }
-                    isEditing.toggle()
-                }) {
-                    Text(isEditing ? "Cancel" : "Edit")
-                }
-            }
-        }
         .onAppear {
             if user == nil {
                 loadUserProfile()
+            }
+        }
+        .sheet(isPresented: $showingEditProfile) {
+            NavigationView {
+                EditProfileView(user: user!) { updatedUser in
+                    self.user = updatedUser
+                }
             }
         }
     }
@@ -108,27 +99,18 @@ struct UserProfileView: View {
             
             if let document = document, document.exists, let data = document.data() {
                 DispatchQueue.main.async {
-                    self.firstName = data["firstName"] as? String ?? ""
-                    self.lastName = data["lastName"] as? String ?? ""
-                    self.phoneNumber = data["phoneNumber"] as? String ?? ""
-                    if let genderString = data["gender"] as? String {
-                        self.gender = User.Gender(rawValue: genderString) ?? .male
-                    }
-                    self.age = String(data["age"] as? Int ?? 0)
-                    
                     // Create user object
                     self.user = User(
                         id: userId,
                         email: data["email"] as? String ?? "",
-                        firstName: self.firstName,
-                        lastName: self.lastName,
-                        phoneNumber: self.phoneNumber,
-                        gender: self.gender,
-                        age: Int(self.age) ?? 0,
+                        firstName: data["firstName"] as? String ?? "",
+                        lastName: data["lastName"] as? String ?? "",
+                        phoneNumber: data["phoneNumber"] as? String ?? "",
+                        gender: User.Gender(rawValue: data["gender"] as? String ?? "male") ?? .male,
+                        age: data["age"] as? Int ?? 0,
                         userType: User.UserType(rawValue: data["userType"] as? String ?? "player") ?? .player,
                         dateJoined: (data["dateJoined"] as? Timestamp)?.dateValue() ?? Date()
                     )
-                    
                     print("Successfully loaded user profile")
                 }
             } else {
@@ -136,28 +118,6 @@ struct UserProfileView: View {
             }
             
             isLoading = false
-        }
-    }
-    
-    private func saveProfile() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        guard let ageInt = Int(age), ageInt > 0 else { return }
-        
-        isLoading = true
-        
-        let db = Firestore.firestore()
-        db.collection("users").document(userId).updateData([
-            "firstName": firstName,
-            "lastName": lastName,
-            "phoneNumber": phoneNumber,
-            "gender": gender.rawValue,
-            "age": ageInt
-        ]) { error in
-            isLoading = false
-            if error == nil {
-                isEditing = false // Exit edit mode after successful save
-                loadUserProfile() // Reload the profile after saving
-            }
         }
     }
 }
