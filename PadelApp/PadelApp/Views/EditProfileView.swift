@@ -12,6 +12,7 @@ struct EditProfileView: View {
     @State private var phoneNumber: String
     @State private var gender: User.Gender
     @State private var age: String
+    @State private var skillLevel: User.SkillLevel
     @State private var isLoading = false
     @State private var errorMessage = ""
     @State private var showError = false
@@ -24,6 +25,7 @@ struct EditProfileView: View {
         _phoneNumber = State(initialValue: user.phoneNumber)
         _gender = State(initialValue: user.gender)
         _age = State(initialValue: String(user.age))
+        _skillLevel = State(initialValue: user.skillLevel)
     }
     
     var body: some View {
@@ -42,6 +44,18 @@ struct EditProfileView: View {
                 
                 TextField("Age", text: $age)
                     .keyboardType(.numberPad)
+            }
+            
+            Section(header: Text("Skill Level")) {
+                Picker("Skill Level", selection: $skillLevel) {
+                    Text("Beginner").tag(User.SkillLevel.beginner)
+                    Text("Intermediate").tag(User.SkillLevel.intermediate)
+                    Text("Advanced").tag(User.SkillLevel.advanced)
+                    Text("Expert").tag(User.SkillLevel.expert)
+                }
+                
+                Text("Current Rating: \(user.numericRating, specifier: "%.1f")")
+                    .foregroundColor(.secondary)
             }
         }
         .navigationTitle("Edit Profile")
@@ -77,7 +91,8 @@ struct EditProfileView: View {
             "lastName": lastName,
             "phoneNumber": phoneNumber,
             "gender": gender.rawValue,
-            "age": ageInt
+            "age": ageInt,
+            "skillLevel": skillLevel.rawValue
         ]) { error in
             isLoading = false
             
@@ -94,7 +109,9 @@ struct EditProfileView: View {
                     gender: gender,
                     age: ageInt,
                     userType: user.userType,
-                    dateJoined: user.dateJoined
+                    dateJoined: user.dateJoined,
+                    skillLevel: skillLevel,
+                    numericRating: user.numericRating
                 )
                 onUpdate(updatedUser)
                 presentationMode.wrappedValue.dismiss()

@@ -20,7 +20,7 @@ struct MainTabView: View {
             }
             
             NavigationView {
-                UserProfileView()
+                UserProfileView(userIsLoggedIn: $userIsLoggedIn)
             }
             .tabItem {
                 Label("Profile", systemImage: "person")

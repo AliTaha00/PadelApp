@@ -4,6 +4,7 @@ import FirebaseFirestore
 
 struct UserSetupView: View {
     @Binding var userIsLoggedIn: Bool
+    @Binding var showUserSetup: Bool
     @Environment(\.dismiss) var dismiss
     
     @State private var firstName = ""
@@ -11,7 +12,9 @@ struct UserSetupView: View {
     @State private var phoneNumber = ""
     @State private var gender = User.Gender.male
     @State private var age = ""
+    @State private var skillLevel = User.SkillLevel.beginner
     @State private var isLoading = false
+    @State private var showError = false
     @State private var errorMessage = ""
     
     var body: some View {
@@ -19,11 +22,7 @@ struct UserSetupView: View {
             Form {
                 Section(header: Text("Personal Information")) {
                     TextField("First Name", text: $firstName)
-                        .autocapitalization(.words)
-                    
                     TextField("Last Name", text: $lastName)
-                        .autocapitalization(.words)
-                    
                     TextField("Phone Number", text: $phoneNumber)
                         .keyboardType(.phonePad)
                     
@@ -37,89 +36,101 @@ struct UserSetupView: View {
                         .keyboardType(.numberPad)
                 }
                 
-                if !errorMessage.isEmpty {
-                    Section {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
+                Section(header: Text("Skill Level")) {
+                    Picker("Skill Level", selection: $skillLevel) {
+                        Text("Beginner").tag(User.SkillLevel.beginner)
+                        Text("Intermediate").tag(User.SkillLevel.intermediate)
+                        Text("Advanced").tag(User.SkillLevel.advanced)
+                        Text("Expert").tag(User.SkillLevel.expert)
                     }
+                    .pickerStyle(SegmentedPickerStyle())
+                    
+                    Text("Rating will start at: \(skillLevel.baseRating, specifier: "%.1f")")
+                        .foregroundColor(.secondary)
                 }
                 
-                Section {
-                    Button(action: saveUserInfo) {
-                        if isLoading {
+                if isLoading {
+                    Section {
+                        HStack {
+                            Spacer()
                             ProgressView()
-                        } else {
-                            Text("Complete Setup")
-                                .frame(maxWidth: .infinity)
-                                .foregroundColor(.white)
+                            Spacer()
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(isFormValid ? Color.blue : Color.gray)
-                    .cornerRadius(10)
-                    .disabled(!isFormValid || isLoading)
                 }
             }
-            .navigationTitle("Complete Your Profile")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Complete Your Profile")
-                        .font(.headline)
-                        .fontWeight(.bold)
+            .navigationTitle("Complete Profile")
+            .navigationBarItems(trailing: 
+                Button("Complete Setup") {
+                    completeSetup()
                 }
+                .disabled(isLoading)
+            )
+            .alert("Error", isPresented: $showError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage)
             }
-            .disabled(isLoading)
-            .interactiveDismissDisabled(true)
         }
+        .interactiveDismissDisabled()
     }
     
-    private var isFormValid: Bool {
-        !firstName.isEmpty &&
-        !lastName.isEmpty &&
-        !phoneNumber.isEmpty &&
-        !age.isEmpty &&
-        Int(age) != nil &&
-        Int(age) ?? 0 > 0
-    }
-    
-    private func saveUserInfo() {
+    private func completeSetup() {
+        // Validate inputs
         guard let ageInt = Int(age), ageInt > 0 else {
             errorMessage = "Please enter a valid age"
+            showError = true
             return
         }
         
-        guard let userId = Auth.auth().currentUser?.uid else {
-            errorMessage = "No user found"
+        guard !firstName.isEmpty && !lastName.isEmpty && !phoneNumber.isEmpty else {
+            errorMessage = "Please fill in all fields"
+            showError = true
             return
         }
         
         isLoading = true
         
+        guard let userId = Auth.auth().currentUser?.uid,
+              let userEmail = Auth.auth().currentUser?.email else {
+            errorMessage = "User authentication error"
+            showError = true
+            isLoading = false
+            return
+        }
+        
         let userData: [String: Any] = [
+            "email": userEmail,
             "firstName": firstName,
             "lastName": lastName,
             "phoneNumber": phoneNumber,
             "gender": gender.rawValue,
-            "age": ageInt,
-            "userType": "player",
-            "dateJoined": FieldValue.serverTimestamp(),
-            "email": Auth.auth().currentUser?.email ?? ""
+            "age": Int(age) ?? 0,
+            "userType": User.UserType.player.rawValue,
+            "dateJoined": Timestamp(date: Date()),
+            "skillLevel": skillLevel.rawValue,
+            "numericRating": skillLevel.baseRating
         ]
         
         let db = Firestore.firestore()
         db.collection("users").document(userId).setData(userData) { error in
-            isLoading = false
-            if let error = error {
-                errorMessage = error.localizedDescription
-            } else {
-                userIsLoggedIn = true
+            DispatchQueue.main.async {
+                isLoading = false
+                
+                if let error = error {
+                    print("Error saving user data: \(error.localizedDescription)")
+                    errorMessage = "Failed to save profile: \(error.localizedDescription)"
+                    showError = true
+                } else {
+                    print("Successfully saved user data")
+                    showUserSetup = false
+                    userIsLoggedIn = true
+                }
             }
         }
     }
 }
 
 #Preview {
-    UserSetupView(userIsLoggedIn: .constant(false))
+    UserSetupView(userIsLoggedIn: .constant(false), showUserSetup: .constant(true))
 } 

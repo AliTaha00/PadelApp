@@ -6,6 +6,7 @@ struct UserProfileView: View {
     @State private var user: User?
     @State private var isLoading = false
     @State private var showingEditProfile = false
+    @Binding var userIsLoggedIn: Bool
     
     var body: some View {
         VStack(spacing: 20) {
@@ -78,6 +79,7 @@ struct UserProfileView: View {
     private func signOut() {
         do {
             try Auth.auth().signOut()
+            userIsLoggedIn = false
         } catch {
             print("Error signing out: \(error)")
         }
@@ -109,7 +111,9 @@ struct UserProfileView: View {
                         gender: User.Gender(rawValue: data["gender"] as? String ?? "male") ?? .male,
                         age: data["age"] as? Int ?? 0,
                         userType: User.UserType(rawValue: data["userType"] as? String ?? "player") ?? .player,
-                        dateJoined: (data["dateJoined"] as? Timestamp)?.dateValue() ?? Date()
+                        dateJoined: (data["dateJoined"] as? Timestamp)?.dateValue() ?? Date(),
+                        skillLevel: User.SkillLevel(rawValue: data["skillLevel"] as? String ?? "beginner") ?? .beginner,
+                        numericRating: data["numericRating"] as? Double ?? 1.0
                     )
                     print("Successfully loaded user profile")
                 }
@@ -123,5 +127,5 @@ struct UserProfileView: View {
 }
 
 #Preview {
-    UserProfileView()
+    UserProfileView(userIsLoggedIn: .constant(true))
 } 

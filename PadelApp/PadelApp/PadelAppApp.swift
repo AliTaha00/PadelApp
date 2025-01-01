@@ -7,17 +7,14 @@
 
 import SwiftUI
 import FirebaseCore
+import FirebaseAuth
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        print("Attempting to configure Firebase...")
-        do {
-            FirebaseApp.configure()
-            print("Firebase successfully configured")
-        } catch {
-            print("Error configuring Firebase: \(error)")
-        }
+        print("Configuring Firebase...")
+        FirebaseApp.configure()
+        print("Firebase configured successfully")
         return true
     }
 }

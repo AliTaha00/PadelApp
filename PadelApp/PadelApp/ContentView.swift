@@ -10,7 +10,7 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct ContentView: View {
-    @State private var userIsLoggedIn = false
+    @State private var userIsLoggedIn = Auth.auth().currentUser != nil
     @State private var showUserSetup = false
     
     var body: some View {
@@ -18,32 +18,46 @@ struct ContentView: View {
             if userIsLoggedIn {
                 MainTabView(userIsLoggedIn: $userIsLoggedIn)
             } else {
-                AuthView(userIsLoggedIn: $userIsLoggedIn)
+                AuthView(userIsLoggedIn: $userIsLoggedIn, showUserSetup: $showUserSetup)
             }
         }
         .onAppear {
-            userIsLoggedIn = Auth.auth().currentUser != nil
+            print("ContentView appeared, checking user status...")
+            checkUserStatus()
+        }
+        .fullScreenCover(isPresented: $showUserSetup) {
+            UserSetupView(userIsLoggedIn: $userIsLoggedIn, showUserSetup: $showUserSetup)
+        }
+    }
+    
+    private func checkUserStatus() {
+        if let user = Auth.auth().currentUser {
+            print("Found existing user session for: \(user.email ?? "unknown")")
             
-            Auth.auth().addStateDidChangeListener { auth, user in
+            let db = Firestore.firestore()
+            db.collection("users").document(user.uid).getDocument { document, error in
                 DispatchQueue.main.async {
-                    if let user = user {
-                        let db = Firestore.firestore()
-                        db.collection("users").document(user.uid).getDocument { document, error in
-                            if let document = document, document.exists {
-                                userIsLoggedIn = true
-                            } else {
-                                showUserSetup = true
-                            }
-                        }
-                    } else {
+                    if let error = error {
+                        print("Error checking user profile: \(error)")
                         userIsLoggedIn = false
+                        return
+                    }
+                    
+                    if let document = document, document.exists {
+                        print("User profile found, maintaining logged in state")
+                        userIsLoggedIn = true
                         showUserSetup = false
+                    } else {
+                        print("No user profile found, showing setup")
+                        showUserSetup = true
+                        userIsLoggedIn = false
                     }
                 }
             }
-        }
-        .fullScreenCover(isPresented: $showUserSetup) {
-            UserSetupView(userIsLoggedIn: $userIsLoggedIn)
+        } else {
+            print("No existing user session found")
+            userIsLoggedIn = false
+            showUserSetup = false
         }
     }
 }

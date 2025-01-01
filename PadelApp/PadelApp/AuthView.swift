@@ -6,8 +6,10 @@ struct AuthView: View {
     @State private var password = ""
     @State private var isLogin = true
     @State private var errorMessage = ""
+    @State private var showError = false
+    @State private var isLoading = false
     @Binding var userIsLoggedIn: Bool
-    @State private var showUserSetup = false
+    @Binding var showUserSetup: Bool
     
     var body: some View {
         NavigationView {
@@ -56,7 +58,7 @@ struct AuthView: View {
             }
         }
         .fullScreenCover(isPresented: $showUserSetup) {
-            UserSetupView(userIsLoggedIn: $userIsLoggedIn)
+            UserSetupView(userIsLoggedIn: $userIsLoggedIn, showUserSetup: $showUserSetup)
         }
     }
     
@@ -84,6 +86,8 @@ struct AuthView: View {
     }
 }
 
-#Preview {
-    AuthView(userIsLoggedIn: .constant(false))
+struct AuthView_Previews: PreviewProvider {
+    static var previews: some View {
+        AuthView(userIsLoggedIn: .constant(false), showUserSetup: .constant(false))
+    }
 } 
