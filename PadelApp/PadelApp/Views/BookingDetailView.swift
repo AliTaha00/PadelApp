@@ -23,52 +23,41 @@ struct BookingDetailView: View {
                 InfoRow(title: "Status", value: booking.status.rawValue.capitalized)
             }
             
-            Section {
-                Button(action: { showCancelAlert = true }) {
-                    HStack {
-                        Spacer()
+            if booking.status != .cancelled {
+                Section {
+                    Button(action: {
+                        showCancelAlert = true
+                    }) {
                         Text("Cancel Booking")
                             .foregroundColor(.red)
-                        Spacer()
                     }
                 }
-                .disabled(booking.status != .confirmed || isLoading)
             }
         }
         .navigationTitle("Booking Details")
-        .alert("Error", isPresented: $showError) {
-            Button("OK") { errorMessage = "" }
-        } message: {
-            Text(errorMessage)
-        }
         .alert("Cancel Booking", isPresented: $showCancelAlert) {
-            Button("No", role: .cancel) { }
-            Button("Yes", role: .destructive) {
+            Button("Cancel", role: .cancel) { }
+            Button("Confirm", role: .destructive) {
                 cancelBooking()
             }
         } message: {
             Text("Are you sure you want to cancel this booking?")
         }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage)
+        }
+        .overlay {
+            if isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.opacity(0.2))
+            }
+        }
         .onAppear {
+            print("Booking ID: \(booking.id)")
             loadFacilityAndCourtDetails()
-        }
-    }
-    
-    private func loadFacilityAndCourtDetails() {
-        let db = Firestore.firestore()
-        
-        // Load facility name
-        db.collection("facilities").document(booking.facilityId).getDocument { document, error in
-            if let facility = try? document?.data(as: Facility.self) {
-                facilityName = facility.name
-            }
-        }
-        
-        // Load court name
-        db.collection("courts").document(booking.courtId).getDocument { document, error in
-            if let court = try? document?.data(as: Court.self) {
-                courtName = court.name
-            }
         }
     }
     
@@ -76,15 +65,55 @@ struct BookingDetailView: View {
         isLoading = true
         let db = Firestore.firestore()
         
-        db.collection("bookings").document(booking.id).updateData([
-            "status": Booking.BookingStatus.cancelled.rawValue
-        ]) { error in
-            isLoading = false
-            if let error = error {
-                errorMessage = error.localizedDescription
-                showError = true
-            } else {
-                presentationMode.wrappedValue.dismiss()
+        print("Attempting to delete booking with ID: \(booking.id)")
+        
+        // First find the document by querying the id field
+        db.collection("bookings")
+            .whereField("id", isEqualTo: booking.id)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    print("Error finding booking: \(error.localizedDescription)")
+                    self.errorMessage = error.localizedDescription
+                    self.showError = true
+                    self.isLoading = false
+                    return
+                }
+                
+                guard let document = querySnapshot?.documents.first else {
+                    print("No booking found with ID: \(booking.id)")
+                    self.errorMessage = "Booking not found"
+                    self.showError = true
+                    self.isLoading = false
+                    return
+                }
+                
+                // Delete the document instead of updating it
+                db.collection("bookings").document(document.documentID).delete { error in
+                    self.isLoading = false
+                    if let error = error {
+                        print("Error deleting booking: \(error.localizedDescription)")
+                        self.errorMessage = error.localizedDescription
+                        self.showError = true
+                    } else {
+                        print("Successfully deleted booking")
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                }
+        }
+    }
+    
+    private func loadFacilityAndCourtDetails() {
+        let db = Firestore.firestore()
+        
+        db.collection("facilities").document(booking.facilityId).getDocument { document, error in
+            if let facility = try? document?.data(as: Facility.self) {
+                facilityName = facility.name
+            }
+        }
+        
+        db.collection("courts").document(booking.courtId).getDocument { document, error in
+            if let court = try? document?.data(as: Court.self) {
+                courtName = court.name
             }
         }
     }
@@ -99,11 +128,10 @@ struct BookingDetailView: View {
     private func formatDuration(minutes: Int) -> String {
         let hours = minutes / 60
         let remainingMinutes = minutes % 60
-        
-        if remainingMinutes == 0 {
-            return "\(hours) hour\(hours == 1 ? "" : "s")"
-        } else {
+        if hours > 0 {
             return "\(hours)h \(remainingMinutes)min"
+        } else {
+            return "\(minutes)min"
         }
     }
 }
