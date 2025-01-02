@@ -14,47 +14,89 @@ struct UserProfileView: View {
                 ProgressView()
             } else if let user = user {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 15) {
-                        // Basic Info
-                        HStack {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .frame(width: 80, height: 80)
-                                .foregroundColor(.blue)
+                    VStack(spacing: 24) {
+                        // Basic Info Card
+                        VStack(alignment: .leading) {
+                            HStack(alignment: .center) {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .frame(width: 80, height: 80)
+                                    .foregroundColor(.blue)
+                                
+                                VStack(alignment: .leading) {
+                                    Text("\(user.firstName) \(user.lastName)")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                    Text(user.email)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        // Player Stats Card
+                        VStack(spacing: 0) {
+                            // Rating Section
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text("Player Rating")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Text(String(format: "%.2f", user.numericRating))
+                                        .font(.system(size: 44, weight: .bold))
+                                        .foregroundColor(.blue)
+                                }
+                                Spacer()
+                                // Rating Circle
+                                ZStack {
+                                    Circle()
+                                        .stroke(Color.blue.opacity(0.2), lineWidth: 8)
+                                    Circle()
+                                        .trim(from: 0, to: CGFloat(min(user.numericRating / 10, 1.0)))
+                                        .stroke(Color.blue, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                                        .rotationEffect(.degrees(-90))
+                                }
+                                .frame(width: 60, height: 60)
+                            }
+                            .padding()
+                            .background(Color.blue.opacity(0.1))
                             
-                            VStack(alignment: .leading) {
-                                Text("\(user.firstName) \(user.lastName)")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                Text(user.email)
-                                    .foregroundColor(.secondary)
+                            Divider()
+                            
+                            // Playing Style Section
+                            HStack(spacing: 20) {
+                                // Hand Preference
+                                VStack {
+                                    Image(systemName: "figure.tennis")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.blue)
+                                    Text(user.playingHand.rawValue)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Divider()
+                                    .frame(height: 40)
+                                
+                                // Court Position
+                                VStack {
+                                    Image(systemName: "sportscourt")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.blue)
+                                    Text(user.preferredPosition.rawValue)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
                             }
+                            .padding()
                         }
-                        .padding()
-                        
-                        // Playing Style
-                        GroupBox(label: Text("Playing Style").font(.headline)) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Playing Hand: \(user.playingHand.rawValue)")
-                                Text("Preferred Position: \(user.preferredPosition.rawValue)")
-                                Text("Current Rating: \(user.numericRating, specifier: "%.1f")")
-                            }
-                            .padding(.vertical, 8)
-                        }
+                        .background(Color.white)
+                        .cornerRadius(15)
+                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
                         .padding(.horizontal)
                         
-                        // Experience
-                        GroupBox(label: Text("Experience").font(.headline)) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Padel: \(user.padelExperience.rawValue)")
-                                Text("Other Racket Sports: \(user.racketSportsExperience.rawValue)")
-                                Text("Playing Frequency: \(user.playingFrequency.rawValue)")
-                            }
-                            .padding(.vertical, 8)
-                        }
-                        .padding(.horizontal)
-                        
-                        // Buttons
+                        // Action Buttons
                         VStack(spacing: 12) {
                             Button(action: { showingEditProfile = true }) {
                                 HStack {
