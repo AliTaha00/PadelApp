@@ -13,53 +13,77 @@ struct UserProfileView: View {
             if isLoading && user == nil {
                 ProgressView()
             } else if let user = user {
-                // Profile Summary
-                VStack(alignment: .leading, spacing: 15) {
-                    HStack {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .frame(width: 80, height: 80)
-                            .foregroundColor(.blue)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 15) {
+                        // Basic Info
+                        HStack {
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .frame(width: 80, height: 80)
+                                .foregroundColor(.blue)
+                            
+                            VStack(alignment: .leading) {
+                                Text("\(user.firstName) \(user.lastName)")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                Text(user.email)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding()
                         
-                        VStack(alignment: .leading) {
-                            Text("\(user.firstName) \(user.lastName)")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            Text(user.email)
-                                .foregroundColor(.secondary)
+                        // Playing Style
+                        GroupBox(label: Text("Playing Style").font(.headline)) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Playing Hand: \(user.playingHand.rawValue)")
+                                Text("Preferred Position: \(user.preferredPosition.rawValue)")
+                                Text("Current Rating: \(user.numericRating, specifier: "%.1f")")
+                            }
+                            .padding(.vertical, 8)
                         }
-                    }
-                    .padding()
-                    
-                    Button(action: { showingEditProfile = true }) {
-                        HStack {
-                            Image(systemName: "pencil")
-                            Text("Edit Profile")
+                        .padding(.horizontal)
+                        
+                        // Experience
+                        GroupBox(label: Text("Experience").font(.headline)) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Padel: \(user.padelExperience.rawValue)")
+                                Text("Other Racket Sports: \(user.racketSportsExperience.rawValue)")
+                                Text("Playing Frequency: \(user.playingFrequency.rawValue)")
+                            }
+                            .padding(.vertical, 8)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                    }
-                    .padding(.horizontal)
-                    
-                    Button(action: signOut) {
-                        HStack {
-                            Image(systemName: "rectangle.portrait.and.arrow.right")
-                            Text("Sign Out")
+                        .padding(.horizontal)
+                        
+                        // Buttons
+                        VStack(spacing: 12) {
+                            Button(action: { showingEditProfile = true }) {
+                                HStack {
+                                    Image(systemName: "pencil")
+                                    Text("Edit Profile")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                            }
+                            
+                            Button(action: signOut) {
+                                HStack {
+                                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                                    Text("Sign Out")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.red)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                            }
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
             }
-            
-            Spacer()
         }
         .navigationTitle("Profile")
         .onAppear {
@@ -73,15 +97,6 @@ struct UserProfileView: View {
                     self.user = updatedUser
                 }
             }
-        }
-    }
-    
-    private func signOut() {
-        do {
-            try Auth.auth().signOut()
-            userIsLoggedIn = false
-        } catch {
-            print("Error signing out: \(error)")
         }
     }
     
@@ -101,7 +116,6 @@ struct UserProfileView: View {
             
             if let document = document, document.exists, let data = document.data() {
                 DispatchQueue.main.async {
-                    // Create user object
                     self.user = User(
                         id: userId,
                         email: data["email"] as? String ?? "",
@@ -112,16 +126,26 @@ struct UserProfileView: View {
                         age: data["age"] as? Int ?? 0,
                         userType: User.UserType(rawValue: data["userType"] as? String ?? "player") ?? .player,
                         dateJoined: (data["dateJoined"] as? Timestamp)?.dateValue() ?? Date(),
-                        skillLevel: User.SkillLevel(rawValue: data["skillLevel"] as? String ?? "beginner") ?? .beginner,
-                        numericRating: data["numericRating"] as? Double ?? 1.0
+                        numericRating: data["numericRating"] as? Double ?? 1.0,
+                        playingHand: User.PlayingHand(rawValue: data["playingHand"] as? String ?? "Right") ?? .right,
+                        preferredPosition: User.CourtPosition(rawValue: data["preferredPosition"] as? String ?? "Both") ?? .both,
+                        padelExperience: User.ExperienceLevel(rawValue: data["padelExperience"] as? String ?? "No Experience") ?? .none,
+                        racketSportsExperience: User.ExperienceLevel(rawValue: data["racketSportsExperience"] as? String ?? "No Experience") ?? .none,
+                        playingFrequency: User.PlayingFrequency(rawValue: data["playingFrequency"] as? String ?? "Less than once a month") ?? .rarely
                     )
                     print("Successfully loaded user profile")
                 }
-            } else {
-                print("No user document found")
             }
-            
             isLoading = false
+        }
+    }
+    
+    private func signOut() {
+        do {
+            try Auth.auth().signOut()
+            userIsLoggedIn = false
+        } catch {
+            print("Error signing out: \(error)")
         }
     }
 }

@@ -12,7 +12,11 @@ struct EditProfileView: View {
     @State private var phoneNumber: String
     @State private var gender: User.Gender
     @State private var age: String
-    @State private var skillLevel: User.SkillLevel
+    @State private var playingHand: User.PlayingHand
+    @State private var preferredPosition: User.CourtPosition
+    @State private var padelExperience: User.ExperienceLevel
+    @State private var racketSportsExperience: User.ExperienceLevel
+    @State private var playingFrequency: User.PlayingFrequency
     @State private var isLoading = false
     @State private var errorMessage = ""
     @State private var showError = false
@@ -25,7 +29,11 @@ struct EditProfileView: View {
         _phoneNumber = State(initialValue: user.phoneNumber)
         _gender = State(initialValue: user.gender)
         _age = State(initialValue: String(user.age))
-        _skillLevel = State(initialValue: user.skillLevel)
+        _playingHand = State(initialValue: user.playingHand)
+        _preferredPosition = State(initialValue: user.preferredPosition)
+        _padelExperience = State(initialValue: user.padelExperience)
+        _racketSportsExperience = State(initialValue: user.racketSportsExperience)
+        _playingFrequency = State(initialValue: user.playingFrequency)
     }
     
     var body: some View {
@@ -46,37 +54,60 @@ struct EditProfileView: View {
                     .keyboardType(.numberPad)
             }
             
-            Section(header: Text("Skill Level")) {
-                Picker("Skill Level", selection: $skillLevel) {
-                    Text("Beginner").tag(User.SkillLevel.beginner)
-                    Text("Intermediate").tag(User.SkillLevel.intermediate)
-                    Text("Advanced").tag(User.SkillLevel.advanced)
-                    Text("Expert").tag(User.SkillLevel.expert)
+            Section(header: Text("Playing Style")) {
+                Picker("Playing Hand", selection: $playingHand) {
+                    Text("Right").tag(User.PlayingHand.right)
+                    Text("Left").tag(User.PlayingHand.left)
                 }
                 
-                Text("Current Rating: \(user.numericRating, specifier: "%.1f")")
-                    .foregroundColor(.secondary)
+                Picker("Preferred Position", selection: $preferredPosition) {
+                    Text("Backhand").tag(User.CourtPosition.backhand)
+                    Text("Forehand").tag(User.CourtPosition.forehand)
+                    Text("Both").tag(User.CourtPosition.both)
+                }
+            }
+            
+            Section(header: Text("Experience")) {
+                Picker("Padel Experience", selection: $padelExperience) {
+                    ForEach([User.ExperienceLevel.none,
+                            .lessThanYear,
+                            .oneToTwo,
+                            .twoToFive,
+                            .moreThanFive], id: \.id) { level in
+                        Text(level.rawValue).tag(level)
+                    }
+                }
+                
+                Picker("Other Racket Sports", selection: $racketSportsExperience) {
+                    ForEach([User.ExperienceLevel.none,
+                            .lessThanYear,
+                            .oneToTwo,
+                            .twoToFive,
+                            .moreThanFive], id: \.id) { level in
+                        Text(level.rawValue).tag(level)
+                    }
+                }
+                
+                Picker("Playing Frequency", selection: $playingFrequency) {
+                    ForEach([User.PlayingFrequency.rarely,
+                            .occasionally,
+                            .regularly,
+                            .frequently], id: \.id) { frequency in
+                        Text(frequency.rawValue).tag(frequency)
+                    }
+                }
             }
         }
         .navigationTitle("Edit Profile")
-        .navigationBarItems(
-            leading: Button("Cancel") {
-                presentationMode.wrappedValue.dismiss()
-            },
-            trailing: Button("Save") {
-                saveProfile()
-            }
-        )
+        .navigationBarItems(trailing: Button("Save", action: saveProfile))
         .alert("Error", isPresented: $showError) {
-            Button("OK") { }
+            Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
         }
-        .disabled(isLoading)
     }
     
     private func saveProfile() {
-        guard let userId = user.id else { return }
         guard let ageInt = Int(age), ageInt > 0 else {
             errorMessage = "Please enter a valid age"
             showError = true
@@ -85,6 +116,8 @@ struct EditProfileView: View {
         
         isLoading = true
         
+        guard let userId = user.id else { return }
+        
         let db = Firestore.firestore()
         db.collection("users").document(userId).updateData([
             "firstName": firstName,
@@ -92,7 +125,11 @@ struct EditProfileView: View {
             "phoneNumber": phoneNumber,
             "gender": gender.rawValue,
             "age": ageInt,
-            "skillLevel": skillLevel.rawValue
+            "playingHand": playingHand.rawValue,
+            "preferredPosition": preferredPosition.rawValue,
+            "padelExperience": padelExperience.rawValue,
+            "racketSportsExperience": racketSportsExperience.rawValue,
+            "playingFrequency": playingFrequency.rawValue
         ]) { error in
             isLoading = false
             
@@ -110,8 +147,12 @@ struct EditProfileView: View {
                     age: ageInt,
                     userType: user.userType,
                     dateJoined: user.dateJoined,
-                    skillLevel: skillLevel,
-                    numericRating: user.numericRating
+                    numericRating: user.numericRating,
+                    playingHand: playingHand,
+                    preferredPosition: preferredPosition,
+                    padelExperience: padelExperience,
+                    racketSportsExperience: racketSportsExperience,
+                    playingFrequency: playingFrequency
                 )
                 onUpdate(updatedUser)
                 presentationMode.wrappedValue.dismiss()

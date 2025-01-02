@@ -11,6 +11,7 @@
 		C6000A282D22C04D002A7CE3 /* Booking.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6000A272D22C04D002A7CE3 /* Booking.swift */; };
 		C6000A2A2D22C3BC002A7CE3 /* MyBookingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6000A292D22C3BC002A7CE3 /* MyBookingsView.swift */; };
 		C6000A2C2D22CB7A002A7CE3 /* BookingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */; };
+		C633BD2E2D26D08D00DFE588 /* PlayerAssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD2D2D26D08D00DFE588 /* PlayerAssessmentView.swift */; };
 		C67AA01C2D21B75A001AA932 /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01B2D21B75A001AA932 /* UserProfileView.swift */; };
 		C67AA01E2D21B762001AA932 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01D2D21B762001AA932 /* User.swift */; };
 		C67AA0202D21BA79001AA932 /* UserSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01F2D21BA79001AA932 /* UserSetupView.swift */; };
@@ -58,6 +59,7 @@
 		C6000A272D22C04D002A7CE3 /* Booking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Booking.swift; path = Models/Booking.swift; sourceTree = "<group>"; };
 		C6000A292D22C3BC002A7CE3 /* MyBookingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MyBookingsView.swift; path = Views/MyBookingsView.swift; sourceTree = "<group>"; };
 		C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BookingDetailView.swift; path = Views/BookingDetailView.swift; sourceTree = "<group>"; };
+		C633BD2D2D26D08D00DFE588 /* PlayerAssessmentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlayerAssessmentView.swift; path = Views/PlayerAssessmentView.swift; sourceTree = "<group>"; };
 		C67AA01B2D21B75A001AA932 /* UserProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserProfileView.swift; path = Views/UserProfileView.swift; sourceTree = "<group>"; };
 		C67AA01D2D21B762001AA932 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = Models/User.swift; sourceTree = "<group>"; };
 		C67AA01F2D21BA79001AA932 /* UserSetupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserSetupView.swift; path = Views/UserSetupView.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */,
 				C6CF9F232D1C0CEE0084E56B /* AuthView.swift */,
 				C6CF9EE62D1C08D70084E56B /* ContentView.swift */,
+				C633BD2D2D26D08D00DFE588 /* PlayerAssessmentView.swift */,
 				C6B41E1B2D24262E00E9DC50 /* EditProfileView.swift */,
 				C6B41E192D241E9300E9DC50 /* MainTabView.swift */,
 				C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */,
@@ -276,6 +279,7 @@
 				C6B41E1A2D241E9400E9DC50 /* MainTabView.swift in Sources */,
 				C6000A2C2D22CB7A002A7CE3 /* BookingDetailView.swift in Sources */,
 				C6000A282D22C04D002A7CE3 /* Booking.swift in Sources */,
+				C633BD2E2D26D08D00DFE588 /* PlayerAssessmentView.swift in Sources */,
 				C6CF9F2A2D1C14370084E56B /* HomeView.swift in Sources */,
 				C67AA0282D21C191001AA932 /* FacilityDetailView.swift in Sources */,
 				C6CF9EE52D1C08D70084E56B /* PadelAppApp.swift in Sources */,
