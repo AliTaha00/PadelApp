@@ -12,6 +12,14 @@
 		C6000A2A2D22C3BC002A7CE3 /* MyBookingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6000A292D22C3BC002A7CE3 /* MyBookingsView.swift */; };
 		C6000A2C2D22CB7A002A7CE3 /* BookingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */; };
 		C633BD2E2D26D08D00DFE588 /* PlayerAssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD2D2D26D08D00DFE588 /* PlayerAssessmentView.swift */; };
+		C633BD302D26DBAD00DFE588 /* OpenMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD2F2D26DBAD00DFE588 /* OpenMatch.swift */; };
+		C633BD332D26DBD300DFE588 /* MatchDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD312D26DBD300DFE588 /* MatchDetailsView.swift */; };
+		C633BD342D26DBD300DFE588 /* OpenMatchCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD322D26DBD300DFE588 /* OpenMatchCreationView.swift */; };
+		C633BD362D26DBDB00DFE588 /* FacilitySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD352D26DBDB00DFE588 /* FacilitySelectionView.swift */; };
+		C633BD382D26DD9300DFE588 /* TimeSlotSelectionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD372D26DD9300DFE588 /* TimeSlotSelectionSection.swift */; };
+		C633BD3A2D26DF5B00DFE588 /* OpenMatchesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD392D26DF5B00DFE588 /* OpenMatchesView.swift */; };
+		C633BD3C2D26E29600DFE588 /* OpenMatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD3B2D26E29600DFE588 /* OpenMatchDetailView.swift */; };
+		C633BD412D26E40B00DFE588 /* MatchRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = C633BD3F2D26E40B00DFE588 /* MatchRows.swift */; };
 		C67AA01C2D21B75A001AA932 /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01B2D21B75A001AA932 /* UserProfileView.swift */; };
 		C67AA01E2D21B762001AA932 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01D2D21B762001AA932 /* User.swift */; };
 		C67AA0202D21BA79001AA932 /* UserSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67AA01F2D21BA79001AA932 /* UserSetupView.swift */; };
@@ -60,6 +68,14 @@
 		C6000A292D22C3BC002A7CE3 /* MyBookingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MyBookingsView.swift; path = Views/MyBookingsView.swift; sourceTree = "<group>"; };
 		C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BookingDetailView.swift; path = Views/BookingDetailView.swift; sourceTree = "<group>"; };
 		C633BD2D2D26D08D00DFE588 /* PlayerAssessmentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlayerAssessmentView.swift; path = Views/PlayerAssessmentView.swift; sourceTree = "<group>"; };
+		C633BD2F2D26DBAD00DFE588 /* OpenMatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OpenMatch.swift; path = Models/OpenMatch.swift; sourceTree = "<group>"; };
+		C633BD312D26DBD300DFE588 /* MatchDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MatchDetailsView.swift; path = Views/MatchDetailsView.swift; sourceTree = "<group>"; };
+		C633BD322D26DBD300DFE588 /* OpenMatchCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OpenMatchCreationView.swift; path = Views/OpenMatchCreationView.swift; sourceTree = "<group>"; };
+		C633BD352D26DBDB00DFE588 /* FacilitySelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FacilitySelectionView.swift; path = Views/FacilitySelectionView.swift; sourceTree = "<group>"; };
+		C633BD372D26DD9300DFE588 /* TimeSlotSelectionSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TimeSlotSelectionSection.swift; path = Views/Components/TimeSlotSelectionSection.swift; sourceTree = "<group>"; };
+		C633BD392D26DF5B00DFE588 /* OpenMatchesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OpenMatchesView.swift; path = Views/OpenMatchesView.swift; sourceTree = "<group>"; };
+		C633BD3B2D26E29600DFE588 /* OpenMatchDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OpenMatchDetailView.swift; path = Views/OpenMatchDetailView.swift; sourceTree = "<group>"; };
+		C633BD3F2D26E40B00DFE588 /* MatchRows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MatchRows.swift; path = Views/Components/MatchRows.swift; sourceTree = "<group>"; };
 		C67AA01B2D21B75A001AA932 /* UserProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserProfileView.swift; path = Views/UserProfileView.swift; sourceTree = "<group>"; };
 		C67AA01D2D21B762001AA932 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = Models/User.swift; sourceTree = "<group>"; };
 		C67AA01F2D21BA79001AA932 /* UserSetupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserSetupView.swift; path = Views/UserSetupView.swift; sourceTree = "<group>"; };
@@ -134,13 +150,21 @@
 			isa = PBXGroup;
 			children = (
 				C6CF9EE42D1C08D70084E56B /* PadelAppApp.swift */,
+				C633BD3F2D26E40B00DFE588 /* MatchRows.swift */,
 				C6CF9F232D1C0CEE0084E56B /* AuthView.swift */,
+				C633BD352D26DBDB00DFE588 /* FacilitySelectionView.swift */,
+				C633BD372D26DD9300DFE588 /* TimeSlotSelectionSection.swift */,
+				C633BD312D26DBD300DFE588 /* MatchDetailsView.swift */,
+				C633BD322D26DBD300DFE588 /* OpenMatchCreationView.swift */,
 				C6CF9EE62D1C08D70084E56B /* ContentView.swift */,
+				C633BD392D26DF5B00DFE588 /* OpenMatchesView.swift */,
+				C633BD2F2D26DBAD00DFE588 /* OpenMatch.swift */,
 				C633BD2D2D26D08D00DFE588 /* PlayerAssessmentView.swift */,
 				C6B41E1B2D24262E00E9DC50 /* EditProfileView.swift */,
 				C6B41E192D241E9300E9DC50 /* MainTabView.swift */,
 				C6000A2B2D22CB7A002A7CE3 /* BookingDetailView.swift */,
 				C6000A292D22C3BC002A7CE3 /* MyBookingsView.swift */,
+				C633BD3B2D26E29600DFE588 /* OpenMatchDetailView.swift */,
 				C6000A272D22C04D002A7CE3 /* Booking.swift */,
 				C6000A252D22C046002A7CE3 /* BookingView.swift */,
 				C67AA0292D21C2FD001AA932 /* SampleData.swift */,
@@ -269,22 +293,30 @@
 				C6B41E1C2D24262E00E9DC50 /* EditProfileView.swift in Sources */,
 				C67AA01C2D21B75A001AA932 /* UserProfileView.swift in Sources */,
 				C6CF9EE72D1C08D70084E56B /* ContentView.swift in Sources */,
+				C633BD3C2D26E29600DFE588 /* OpenMatchDetailView.swift in Sources */,
 				C67AA01E2D21B762001AA932 /* User.swift in Sources */,
 				C67AA0262D21C11D001AA932 /* FacilitiesView.swift in Sources */,
 				C67AA0242D21C115001AA932 /* Facility.swift in Sources */,
 				C6000A262D22C046002A7CE3 /* BookingView.swift in Sources */,
 				C67AA0232D21C115001AA932 /* Court.swift in Sources */,
 				C67AA0202D21BA79001AA932 /* UserSetupView.swift in Sources */,
+				C633BD332D26DBD300DFE588 /* MatchDetailsView.swift in Sources */,
+				C633BD412D26E40B00DFE588 /* MatchRows.swift in Sources */,
 				C67AA02A2D21C2FD001AA932 /* SampleData.swift in Sources */,
 				C6B41E1A2D241E9400E9DC50 /* MainTabView.swift in Sources */,
 				C6000A2C2D22CB7A002A7CE3 /* BookingDetailView.swift in Sources */,
 				C6000A282D22C04D002A7CE3 /* Booking.swift in Sources */,
+				C633BD302D26DBAD00DFE588 /* OpenMatch.swift in Sources */,
 				C633BD2E2D26D08D00DFE588 /* PlayerAssessmentView.swift in Sources */,
 				C6CF9F2A2D1C14370084E56B /* HomeView.swift in Sources */,
+				C633BD3A2D26DF5B00DFE588 /* OpenMatchesView.swift in Sources */,
 				C67AA0282D21C191001AA932 /* FacilityDetailView.swift in Sources */,
+				C633BD362D26DBDB00DFE588 /* FacilitySelectionView.swift in Sources */,
 				C6CF9EE52D1C08D70084E56B /* PadelAppApp.swift in Sources */,
 				C6CF9F242D1C0CEE0084E56B /* AuthView.swift in Sources */,
+				C633BD382D26DD9300DFE588 /* TimeSlotSelectionSection.swift in Sources */,
 				C6000A2A2D22C3BC002A7CE3 /* MyBookingsView.swift in Sources */,
+				C633BD342D26DBD300DFE588 /* OpenMatchCreationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

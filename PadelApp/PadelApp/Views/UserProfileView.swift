@@ -3,10 +3,12 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct UserProfileView: View {
+    @Binding var userIsLoggedIn: Bool
+    @Binding var showUserSetup: Bool
+    
     @State private var user: User?
     @State private var isLoading = false
     @State private var showingEditProfile = false
-    @Binding var userIsLoggedIn: Bool
     
     var body: some View {
         VStack(spacing: 20) {
@@ -193,5 +195,5 @@ struct UserProfileView: View {
 }
 
 #Preview {
-    UserProfileView(userIsLoggedIn: .constant(true))
+    UserProfileView(userIsLoggedIn: .constant(true), showUserSetup: .constant(false))
 } 

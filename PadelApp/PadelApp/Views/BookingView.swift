@@ -7,6 +7,9 @@ struct BookingView: View {
     let court: Court
     let date: Date
     @Binding var isPresented: Bool
+    @Binding var selectedTab: Int
+    
+    @State private var navigateToBookings = false
     
     @State private var selectedHour: Int?
     @State private var duration = 60
@@ -163,14 +166,17 @@ struct BookingView: View {
         ]
         
         let db = Firestore.firestore()
-        db.collection("bookings").document(bookingData["id"] as! String).setData(bookingData) { error in
-            if let error = error {
-                errorMessage = error.localizedDescription
-                showError = true
-            } else {
-                isPresented = false
+        db.collection("bookings").addDocument(data: bookingData) { error in
+            DispatchQueue.main.async {
+                isLoading = false
+                if let error = error {
+                    errorMessage = error.localizedDescription
+                    showError = true
+                } else {
+                    isPresented = false
+                    selectedTab = 1
+                }
             }
-            isLoading = false
         }
     }
     

@@ -3,6 +3,7 @@ import FirebaseAuth
 
 struct HomeView: View {
     @Binding var userIsLoggedIn: Bool
+    @Binding var selectedTab: Int
     @State private var userEmail: String = Auth.auth().currentUser?.email ?? "User"
     
     var body: some View {
@@ -12,7 +13,7 @@ struct HomeView: View {
                 .fontWeight(.bold)
                 .padding()
             
-            NavigationLink(destination: FacilitiesView()) {
+            NavigationLink(destination: FacilitiesView(selectedTab: $selectedTab)) {
                 HStack {
                     Image(systemName: "sportscourt")
                     Text("Reserve a Court")
@@ -25,9 +26,20 @@ struct HomeView: View {
             }
             .padding(.horizontal)
             
-            Button(action: {
-                // TODO: Implement open match creation
-            }) {
+            NavigationLink(destination: OpenMatchesView()) {
+                HStack {
+                    Image(systemName: "person.2")
+                    Text("View Open Matches")
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.orange)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .padding(.horizontal)
+            
+            NavigationLink(destination: OpenMatchCreationView(selectedTab: $selectedTab)) {
                 HStack {
                     Image(systemName: "person.3.fill")
                     Text("Create Open Match")
@@ -45,7 +57,3 @@ struct HomeView: View {
         .navigationBarTitle("Padel App", displayMode: .large)
     }
 }
-
-#Preview {
-    HomeView(userIsLoggedIn: .constant(true))
-} 

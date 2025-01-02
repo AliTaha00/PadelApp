@@ -7,44 +7,35 @@ struct FacilityDetailView: View {
     @State private var courts: [Court] = []
     @State private var selectedDate = Date()
     @State private var selectedCourt: Court?
-    @State private var selectedTime: Int?
     @State private var showingBookingSheet = false
     @State private var isLoading = false
     @State private var errorMessage = ""
     @State private var showError = false
-    
-    // Available time slots (facility hours)
-    var timeSlots: [Int] {
-        Array(facility.openingHour...facility.closingHour)
-    }
+    @Binding var selectedTab: Int
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Facility Information
                 facilityInfoSection
-                
-                // Date Selection
                 dateSelectionSection
-                
-                // Courts Section
                 courtsSection
             }
             .padding()
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(facility.name)
         .sheet(isPresented: $showingBookingSheet) {
             if let court = selectedCourt {
                 BookingView(
                     facility: facility,
                     court: court,
                     date: selectedDate,
-                    isPresented: $showingBookingSheet
+                    isPresented: $showingBookingSheet,
+                    selectedTab: $selectedTab
                 )
             }
         }
         .alert("Error", isPresented: $showError) {
-            Button("OK") { errorMessage = "" }
+            Button("OK") { }
         } message: {
             Text(errorMessage)
         }
@@ -55,22 +46,11 @@ struct FacilityDetailView: View {
     
     private var facilityInfoSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let imageURL = facility.imageURL {
-                AsyncImage(url: URL(string: imageURL)) { image in
-                    image.resizable().aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Rectangle().fill(Color.gray.opacity(0.2))
-                }
-                .frame(height: 200)
-                .clipped()
-            }
-            
             Text(facility.name)
-                .font(.title2)
-                .fontWeight(.bold)
+                .font(.title)
             
             HStack {
-                Image(systemName: "location")
+                Image(systemName: "mappin")
                 Text(facility.address)
             }
             .font(.subheadline)
@@ -125,8 +105,8 @@ struct FacilityDetailView: View {
     
     private func loadCourts() {
         isLoading = true
-        
         let db = Firestore.firestore()
+        
         db.collection("courts")
             .whereField("facilityId", isEqualTo: facility.id)
             .getDocuments { snapshot, error in
@@ -172,5 +152,5 @@ struct CourtBookingRow: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-} 
+}
 

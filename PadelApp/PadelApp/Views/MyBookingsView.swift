@@ -4,6 +4,7 @@ import FirebaseAuth
 
 struct MyBookingsView: View {
     @State private var bookings: [Booking] = []
+    @State private var openMatches: [OpenMatch] = []
     @State private var isLoading = false
     @State private var errorMessage = ""
     
@@ -11,72 +12,82 @@ struct MyBookingsView: View {
         Group {
             if isLoading {
                 ProgressView()
-            } else if bookings.isEmpty {
+            } else if bookings.isEmpty && openMatches.isEmpty {
                 ContentUnavailableView("No Bookings", 
                     systemImage: "calendar",
                     description: Text("You haven't made any bookings yet")
                 )
             } else {
-                List(bookings) { booking in
-                    BookingRow(booking: booking)
+                List {
+                    if !bookings.isEmpty {
+                        Section(header: Text("Court Bookings")) {
+                            ForEach(bookings) { booking in
+                                BookingRow(booking: booking)
+                            }
+                        }
+                    }
+                    
+                    if !openMatches.isEmpty {
+                        Section(header: Text("Open Matches")) {
+                            ForEach(openMatches) { match in
+                                OpenMatchRow(match: match)
+                            }
+                        }
+                    }
                 }
             }
         }
         .navigationTitle("My Bookings")
         .onAppear {
             loadUserBookings()
+            loadUserOpenMatches()
         }
     }
     
     private func loadUserBookings() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         isLoading = true
-        print("Loading bookings for user: \(userId)")
         
         let db = Firestore.firestore()
         db.collection("bookings")
             .whereField("userId", isEqualTo: userId)
-            .whereField("status", isEqualTo: Booking.BookingStatus.confirmed.rawValue)
             .getDocuments { snapshot, error in
-                isLoading = false
-                
                 if let error = error {
                     print("Error loading bookings: \(error)")
                     errorMessage = error.localizedDescription
                     return
                 }
                 
-                print("Found \(snapshot?.documents.count ?? 0) bookings")
-                
                 self.bookings = snapshot?.documents.compactMap { document in
-                    let data = document.data()
-                    guard let id = data["id"] as? String,
-                          let facilityId = data["facilityId"] as? String,
-                          let courtId = data["courtId"] as? String,
-                          let userId = data["userId"] as? String,
-                          let timestamp = data["date"] as? Timestamp,
-                          let startTime = data["startTime"] as? Int,
-                          let duration = data["duration"] as? Int,
-                          let status = data["status"] as? String,
-                          let totalPrice = data["totalPrice"] as? Double else {
-                        print("Failed to parse booking document: \(document.documentID)")
-                        return nil
-                    }
-                    
-                    return Booking(
-                        id: id,
-                        facilityId: facilityId,
-                        courtId: courtId,
-                        userId: userId,
-                        date: timestamp.dateValue(),
-                        startTime: startTime,
-                        duration: duration,
-                        status: Booking.BookingStatus(rawValue: status) ?? .pending,
-                        totalPrice: totalPrice
-                    )
+                    try? document.data(as: Booking.self)
                 } ?? []
                 
-                print("Successfully loaded \(self.bookings.count) bookings")
+                isLoading = false
+            }
+    }
+    
+    private func loadUserOpenMatches() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        db.collection("openMatches")
+            .whereField("players", arrayContains: userId)
+            .whereField("status", isEqualTo: "open")
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error loading open matches: \(error)")
+                    errorMessage = error.localizedDescription
+                    return
+                }
+                
+                self.openMatches = snapshot?.documents.compactMap { document in
+                    var match = try? document.data(as: OpenMatch.self)
+                    match?.id = document.documentID
+                    return match
+                } ?? []
+                
+                // Sort by creation date
+                self.openMatches.sort { $0.createdAt > $1.createdAt }
             }
     }
 }
@@ -144,4 +155,4 @@ struct BookingRow: View {
             }
         }
     }
-} 
+}

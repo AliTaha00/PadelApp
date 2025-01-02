@@ -6,42 +6,22 @@ struct FacilitiesView: View {
     @State private var isLoading = false
     @State private var errorMessage = ""
     @State private var showError = false
+    @Binding var selectedTab: Int
     
     var body: some View {
         Group {
             if isLoading {
-                ProgressView()
-            } else if facilities.isEmpty {
-                VStack {
-                    Text("No Facilities Available")
-                        .font(.headline)
-                    Button("Add Sample Facilities") {
-                        print("Button tapped!")
-                        SampleDataManager.addSampleFacilities()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            loadFacilities()
-                        }
-                    }
+                ProgressView("Loading facilities...")
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    
-                    if !errorMessage.isEmpty {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding()
-                    }
-                }
             } else {
                 List(facilities) { facility in
-                    NavigationLink(destination: FacilityDetailView(facility: facility)) {
+                    NavigationLink(destination: FacilityDetailView(facility: facility, selectedTab: $selectedTab)) {
                         FacilityRowView(facility: facility)
                     }
                 }
             }
         }
-        .navigationTitle("Padel App")
+        .navigationTitle("Facilities")
         .alert("Error", isPresented: $showError) {
             Button("OK") { showError = false }
         } message: {
@@ -128,5 +108,5 @@ struct FacilityRowView: View {
 }
 
 #Preview {
-    FacilitiesView()
+    FacilitiesView(selectedTab: .constant(0))
 } 
