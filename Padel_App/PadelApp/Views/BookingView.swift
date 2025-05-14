@@ -34,80 +34,145 @@ struct BookingView: View {
     }
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Booking Details")) {
-                    Text("Court: \(court.name)")
-                    Text("Date: \(date.formatted(date: .long, time: .omitted))")
-                }
-                
-                Section(header: Text("Duration")) {
-                    Picker("Duration", selection: $duration) {
-                        ForEach([30, 60, 90, 120, 150, 180], id: \.self) { minutes in
-                            Text(formatDuration(minutes: minutes))
+        ZStack {
+            // Background gradient
+            LinearGradient(gradient: Gradient(colors: [Color(UIColor.systemBackground), Color.blue.opacity(0.1)]), 
+                          startPoint: .top, 
+                          endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header Card
+                    VStack(spacing: 16) {
+                        BookingInfoCard(facility: facility, court: court, date: date)
+                        
+                        // Duration Selection
+                        DurationSelectionView(duration: $duration)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Available Time Slots
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Available Time Slots")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        
+                        if isLoading {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .padding()
+                                Spacer()
+                            }
+                        } else if availableTimeSlots.isEmpty {
+                            Text("No available time slots for selected duration")
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding()
+                        } else {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 10) {
+                                    ForEach(availableTimeSlots, id: \.self) { hour in
+                                        TimeSlotButton(
+                                            hour: hour,
+                                            isSelected: selectedHour == hour,
+                                            action: { selectedHour = hour }
+                                        )
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
                         }
                     }
-                }
-                
-                Section(header: Text("Available Time Slots")) {
-                    if isLoading {
-                        ProgressView()
-                    } else if availableTimeSlots.isEmpty {
-                        Text("No available time slots for selected duration")
-                            .foregroundColor(.secondary)
-                    } else {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 10) {
-                                ForEach(availableTimeSlots, id: \.self) { hour in
-                                    TimeSlotButton(
-                                        hour: hour,
-                                        isSelected: selectedHour == hour,
-                                        action: { selectedHour = hour }
-                                    )
+                    .padding(.top, 8)
+                    
+                    // Selected Time Summary
+                    if let selectedHour = selectedHour {
+                        VStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Booking Summary")
+                                    .font(.headline)
+                                
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Time")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        Text("\(String(format: "%02d:00", selectedHour)) - \(String(format: "%02d:%02d", selectedHour + (duration / 60), (duration % 60)))")
+                                            .font(.title3)
+                                            .fontWeight(.semibold)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    VStack(alignment: .trailing, spacing: 4) {
+                                        Text("Total")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        Text("$\(calculatePrice(), specifier: "%.2f")")
+                                            .font(.title3)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.blue)
+                                    }
                                 }
                             }
+                            .padding()
+                            .background(Color(UIColor.secondarySystemBackground))
+                            .cornerRadius(16)
+                            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    // Confirm Button
+                    VStack {
+                        Button(action: createBooking) {
+                            HStack {
+                                Spacer()
+                                if isLoading {
+                                    ProgressView()
+                                        .tint(.white)
+                                } else {
+                                    Text("Confirm Booking")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                }
+                                Spacer()
+                            }
+                            .padding()
+                            .background(selectedHour == nil ? Color.gray : Color.blue)
+                            .cornerRadius(14)
                             .padding(.horizontal)
                         }
-                    }
-                }
-                
-                if let selectedHour = selectedHour {
-                    Section(header: Text("Selected Time")) {
-                        HStack {
-                            Text("\(String(format: "%02d:00", selectedHour)) - \(String(format: "%02d:%02d", selectedHour + (duration / 60), (duration % 60)))")
-                            Spacer()
-                            Text("$\(calculatePrice(), specifier: "%.2f")")
-                                .fontWeight(.semibold)
+                        .disabled(selectedHour == nil || isLoading)
+                        
+                        Button(action: { isPresented = false }) {
+                            Text("Cancel")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                                .padding(.vertical, 12)
                         }
                     }
+                    .padding(.vertical)
                 }
-                
-                Section {
-                    Button(action: createBooking) {
-                        if isLoading {
-                            ProgressView()
-                        } else {
-                            Text("Confirm Booking")
-                        }
-                    }
-                    .disabled(selectedHour == nil || isLoading)
-                }
+                .padding(.vertical)
             }
-            .navigationTitle("Book Court")
-            .navigationBarItems(trailing: Button("Cancel") {
-                isPresented = false
-            })
-            .alert("Error", isPresented: $showError) {
-                Button("OK") { errorMessage = "" }
-            } message: {
-                Text(errorMessage)
-            }
-            .onChange(of: duration) { _ in
-                selectedHour = nil
-            }
-            .onAppear {
-                loadExistingBookings()
-            }
+        }
+        .navigationTitle("Book Court")
+        .navigationBarItems(trailing: Button("Cancel") {
+            isPresented = false
+        })
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { errorMessage = "" }
+        } message: {
+            Text(errorMessage)
+        }
+        .onChange(of: duration) { _ in
+            selectedHour = nil
+        }
+        .onAppear {
+            loadExistingBookings()
         }
     }
     
@@ -197,6 +262,137 @@ struct BookingView: View {
     }
 }
 
+struct BookingInfoCard: View {
+    let facility: Facility
+    let court: Court
+    let date: Date
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(facility.name)
+                        .font(.title3)
+                        .fontWeight(.bold)
+                    
+                    Text(facility.address)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "sportscourt.fill")
+                    .font(.system(size: 30))
+                    .foregroundColor(.blue.opacity(0.8))
+            }
+            
+            Divider()
+            
+            HStack(spacing: 20) {
+                InfoCell(
+                    title: "Court",
+                    value: court.name,
+                    icon: "sportscourt"
+                )
+                
+                InfoCell(
+                    title: "Date",
+                    value: date.formatted(date: .abbreviated, time: .omitted),
+                    icon: "calendar"
+                )
+                
+                InfoCell(
+                    title: "Type",
+                    value: court.type.rawValue,
+                    icon: "house"
+                )
+            }
+        }
+        .padding()
+        .background(Color(UIColor.secondarySystemBackground))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+}
+
+struct InfoCell: View {
+    let title: String
+    let value: String
+    let icon: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Text(value)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct DurationSelectionView: View {
+    @Binding var duration: Int
+    let durations = [30, 60, 90, 120, 150, 180]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Select Duration")
+                .font(.headline)
+            
+            HStack(spacing: 8) {
+                ForEach(durations, id: \.self) { minutes in
+                    DurationButton(
+                        duration: minutes,
+                        isSelected: duration == minutes,
+                        action: { duration = minutes }
+                    )
+                }
+            }
+        }
+    }
+}
+
+struct DurationButton: View {
+    let duration: Int
+    let isSelected: Bool
+    let action: () -> Void
+    
+    private func formatDuration() -> String {
+        let hours = duration / 60
+        let minutes = duration % 60
+        
+        if minutes == 0 {
+            return "\(hours)h"
+        } else {
+            return "\(hours):\(String(format: "%02d", minutes))"
+        }
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            Text(formatDuration())
+                .font(.subheadline)
+                .fontWeight(isSelected ? .bold : .regular)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(isSelected ? Color.blue : Color(UIColor.tertiarySystemBackground))
+                .foregroundColor(isSelected ? .white : .primary)
+                .cornerRadius(10)
+        }
+    }
+}
+
 struct TimeSlotButton: View {
     let hour: Int
     let isSelected: Bool
@@ -204,12 +400,31 @@ struct TimeSlotButton: View {
     
     var body: some View {
         Button(action: action) {
-            Text(String(format: "%02d:00", hour))
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .background(isSelected ? Color.blue : Color.secondary.opacity(0.2))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(8)
+            VStack(spacing: 8) {
+                Text(String(format: "%02d:00", hour))
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(isSelected ? .white : .primary)
+                    
+                Text(hour < 12 ? "AM" : "PM")
+                    .font(.system(size: 12))
+                    .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+            }
+            .frame(width: 70, height: 70)
+            .background(
+                ZStack {
+                    if isSelected {
+                        Circle()
+                            .fill(Color.blue)
+                    } else {
+                        Circle()
+                            .fill(Color(UIColor.tertiarySystemBackground))
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                            )
+                    }
+                }
+            )
         }
     }
 }
